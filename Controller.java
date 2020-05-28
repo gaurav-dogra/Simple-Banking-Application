@@ -6,15 +6,15 @@ import java.util.List;
 public class Controller {
     List<Account> accounts = new ArrayList<>();
 
-    public boolean login(String cardNo, String pin) {
-        accounts.forEach(account -> {
+    public Account login(String cardNo, String pin) {
+
+        for (Account account : accounts) {
             Card card = account.getCard();
             if (card.getCardNo().equals(cardNo) && card.getPin().equals(pin)) {
-                return true; // ERROR description: Unexpected return value
+                return account;
             }
-        });
-
-        return false;
+        }
+        return null;
     }
 
     public Card createAccount() {
