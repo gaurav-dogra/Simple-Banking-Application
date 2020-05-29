@@ -5,27 +5,72 @@ import java.util.Scanner;
 public class BankingUI {
 
     public void start(Controller controller) {
+        boolean loggedIn = false;
         boolean flag = true;
+        Account account = null;
 
         while (flag) {
 
-            printMainMenu();
-            int input = getInput();
+            if (!loggedIn) {
 
-            switch (input) {
-                case 1:
-                    createAccount(controller);
-                    break;
-                case 2:
-                    logIn(controller);
-                    break;
-                case 0:
-                    System.out.println("\nBye!");
-                    flag = false;
-                    break;
+                String input = printMenu("1. Create account", "2. Log into account", "0. Exit");
+
+                switch (input) {
+                    case "1":
+                        createAccount(controller);
+                        break;
+
+                    case "2":
+                        account = login(controller);
+                        if (account != null) {
+                            System.out.println("\nYou have successfully logged in!");
+                            loggedIn = true;
+                        } else {
+                            System.out.println("\nWrong card number or PIN!\n");
+                        }
+                        break;
+
+                    case "0":
+                        System.out.println("\nBye!");
+                        flag = false;
+                        break;
+                    default:
+                }
+            } else {
+
+                String input = printMenu("\n1. Balance", "2. Log out", "0. Exit");
+                switch (input) {
+                    case "1":
+                        printBalance(account);
+                        break;
+                    case "2":
+                        logOut();
+                        loggedIn = false;
+                        break;
+                    case "0":
+                        flag = false;
+                    default:
+                }
             }
-        }
 
+        }
+    }
+
+    private Account login(Controller controller) {
+        System.out.println("\nEnter your card number:");
+        String cardNo = getInput();
+
+        System.out.println("Enter your PIN:");
+        String pin = getInput();
+
+        return controller.login(cardNo, pin);
+    }
+
+    private String printMenu(String... lines) {
+        for (String line : lines) {
+            System.out.println(line);
+        }
+        return getInput();
     }
 
     private void createAccount(Controller controller) {
@@ -34,53 +79,11 @@ public class BankingUI {
                 "Your card number:\n" +
                 "%s\n" +
                 "Your card PIN:\n" +
-                "%s\n", card.getCardNo(), card.getPin());
-    }
-
-    private void printLogMenu() {
-        System.out.println("\n1. Balance\n" +
-                "2. Log out\n" +
-                "0. Exit");
-    }
-
-    private void logIn(Controller controller) {
-
-        System.out.println("\nEnter your card number:");
-        String cardNo = getStringInput();
-
-        System.out.println("Enter your PIN:");
-        String pin = getStringInput();
-
-        Account account = controller.login(cardNo, pin);
-        if (account != null) {
-            System.out.println("\nYou have successfully logged in!");
-            boolean flag = true;
-
-            while (flag) {
-
-                printLogMenu();
-                int input = getInput();
-                switch (input) {
-                    case 1:
-                        printBalance(account);
-                        break;
-                    case 2:
-                        logOut();
-                        flag = false;
-                        break;
-                    case 0:
-                        flag = false;
-                        System.out.println("\nBye!");
-                }
-            }
-
-        } else {
-            System.out.println("\nWrong card number or PIN!");
-        }
+                "%s\n\n", card.getCardNo(), card.getPin());
     }
 
     private void logOut() {
-        System.out.println("\nYou have successfully logged out!");
+        System.out.println("\nYou have successfully logged out!\n");
     }
 
     private void printBalance(Account account) {
@@ -92,34 +95,8 @@ public class BankingUI {
         }
     }
 
-    private String getStringInput() {
-        String input = "";
+    private String getInput() {
         Scanner scanner = new Scanner(System.in);
-        try {
-            input = scanner.next();
-            scanner.nextLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return input;
-    }
-
-    private int getInput() {
-        int input;
-        Scanner scanner = new Scanner(System.in);
-        try {
-            input = scanner.nextInt();
-            scanner.nextLine();
-        } catch (Exception e) {
-            System.out.println("Wrong input");
-            return 0;
-        }
-        return input;
-    }
-
-    private void printMainMenu() {
-        System.out.println("\n1. Create account\n" +
-                "2. Log into account\n" +
-                "0. Exit");
+        return scanner.next();
     }
 }
