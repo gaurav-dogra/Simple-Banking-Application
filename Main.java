@@ -1,4 +1,4 @@
-package banking.Controller;
+package banking;
 
 import banking.Controller.Controller;
 
